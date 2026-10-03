@@ -658,7 +658,7 @@ def run_graph_analysis(
     Params:
         in_dir: Folder with convergence results, typically {root}/analysis_results/convergence_results.
         out_dir: Destination folder for node_metrics.csv communities.csv reciprocity files graph image and summary.
-        mode: liwc or spacy, used to pick the right edges filename.
+        mode: feature set ("wordlists"), used to pick the right edges filename.
         positive_only: Keep only edges with positive weight.
         prefer_weight_col: Which edge weight column to prefer if present.
 

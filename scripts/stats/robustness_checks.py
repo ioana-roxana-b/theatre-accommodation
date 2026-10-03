@@ -294,7 +294,7 @@ def check_length():
 def check_reciprocity():
     """Pearson (paper, from compute_stats log) vs Spearman (network_similarity descriptors) reciprocity."""
     import re
-    log = open('outputs/logs/10_compute_stats.log', encoding='utf-8').read()
+    log = open('outputs/logs/08_compute_stats.log', encoding='utf-8').read()
     pear = {m.group(1).strip(): float(m.group(2)) for m in
             re.finditer(r'^\s+(.+?): nodes=\d+.*?recip_corr=(-?[\d.]+|nan)', log, re.M)}
     desc = pd.read_csv('outputs/network_similarity/descriptors_conv.csv')

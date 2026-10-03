@@ -3,10 +3,15 @@ from pathlib import Path
 
 import pandas as pd
 
-from preprocessing import preprocess_data          # cleans the PDNC quotation csv
+from preprocessing import preprocess_data          # cleans the quotation csv
 from preprocessing import build_pairs              # merges contiguous turns and builds A→B pairs
-from preprocessing import features                 # spaCy-based feature extractor
-from preprocessing import prepare_liwc             # makes LIWC input csv
+from preprocessing import features_wordlists       # 9 LIWC-aligned function word families
+
+
+def _check_mode(mode: str) -> None:
+    if mode.lower() != "wordlists":
+        raise ValueError("mode must be 'wordlists'")
+
 
 def run_one_play_prep(
     play_dir: Path,
@@ -21,15 +26,15 @@ def run_one_play_prep(
     """
     Generate per-play preprocessing artifacts for downstream analysis.
     Params:
-        play_dir: Path to the PDNC play folder containing source CSVs.
+        play_dir: Path to the play folder containing source CSVs.
         out_dir: Output directory where derived artifacts are written.
-        mode: Either "spacy" or "liwc" to control final outputs.
+        mode: Feature set; only "wordlists".
         lowercase: Whether to lowercase quotes during cleaning.
         character_info_arg: Optional override path or {play} pattern for metadata.
     Returns:
         None
     """
-
+    _check_mode(mode)
     out_dir.mkdir(parents=True, exist_ok=True)
     quotes_csv = play_dir/"quotation_info.csv"
     if not quotes_csv.exists():
@@ -83,37 +88,12 @@ def run_one_play_prep(
     pairs_path_rand = out_dir/"pairs_A_to_B_randomized.csv"
     pairs_df_rand.to_csv(pairs_path_rand, index=False)
 
-    # 3 final prep per mode
-    mode = mode.lower()
-    if mode == "spacy":
-        # extract spaCy based features for all three conditions
-        features.process_pairs(pairs_path_adj, out_dir/"pairs_features.csv", lang=lang)
-        features.process_pairs(pairs_path_nonadj, out_dir/"pairs_features_nonadjacent.csv", lang=lang)
-        features.process_pairs(pairs_path_rand, out_dir/"pairs_features_randomized.csv", lang=lang)
-        print(f"[prep] spaCy features written in {out_dir}")
+    # 3 word-list features for all three conditions
+    features_wordlists.process_pairs(pairs_path_adj, out_dir/"pairs_features.csv", lang=lang)
+    features_wordlists.process_pairs(pairs_path_nonadj, out_dir/"pairs_features_nonadjacent.csv", lang=lang)
+    features_wordlists.process_pairs(pairs_path_rand, out_dir/"pairs_features_randomized.csv", lang=lang)
+    print(f"[prep] word-list features written in {out_dir}")
 
-    elif mode == "stopwords":
-        from preprocessing import features_stopwords
-        features_stopwords.process_pairs(pairs_path_adj, out_dir/"pairs_features.csv", lang=lang)
-        features_stopwords.process_pairs(pairs_path_nonadj, out_dir/"pairs_features_nonadjacent.csv", lang=lang)
-        features_stopwords.process_pairs(pairs_path_rand, out_dir/"pairs_features_randomized.csv", lang=lang)
-        print(f"[prep] stopwords features written in {out_dir}")
-
-    elif mode == "wordlists":
-        from preprocessing import features_wordlists
-        features_wordlists.process_pairs(pairs_path_adj, out_dir/"pairs_features.csv", lang=lang)
-        features_wordlists.process_pairs(pairs_path_nonadj, out_dir/"pairs_features_nonadjacent.csv", lang=lang)
-        features_wordlists.process_pairs(pairs_path_rand, out_dir/"pairs_features_randomized.csv", lang=lang)
-        print(f"[prep] word-list features written in {out_dir}")
-
-    elif mode == "liwc":
-        # write LIWC inputs for all three conditions
-        prepare_liwc.make_liwc_input(pairs_csv=pairs_path_adj, liwc_input_csv=out_dir/"liwc_input.csv")
-        prepare_liwc.make_liwc_input(pairs_csv=pairs_path_nonadj, liwc_input_csv=out_dir/"liwc_input_nonadjacent.csv")
-        prepare_liwc.make_liwc_input(pairs_csv=pairs_path_rand, liwc_input_csv=out_dir/"liwc_input_randomized.csv")
-        print(f"[prep] LIWC inputs written in {out_dir}")
-    else:
-        raise ValueError("mode must be spacy, stopwords, or liwc")
 
 def run_corpus_prep(
     play_dirs,
@@ -130,13 +110,13 @@ def run_corpus_prep(
     Params:
         play_dirs: Iterable of play directories to include in the corpus.
         out_dir: Root output directory where corpus artifacts are written.
-        mode: Either "spacy" or "liwc" to control final artifacts.
+        mode: Feature set; only "wordlists".
         lowercase: Whether to lowercase quotes during cleaning.
         character_info_pattern: Optional {play} pattern to locate metadata files.
     Returns:
         None
     """
-    mode = mode.lower()
+    _check_mode(mode)
     out_root = Path(out_dir)
     out_all = out_root/"All_Plays"
     out_root.mkdir(parents=True, exist_ok=True)
@@ -188,32 +168,9 @@ def run_corpus_prep(
 
     print(f"[corpus] merged pairs written to {out_all}")
 
-    # Create LIWC or spaCy features depending on mode
-    if mode == "spacy":
-        from preprocessing import features
-        features.process_pairs(adj_path, out_all/"pairs_features.csv", lang=lang)
-        features.process_pairs(non_path, out_all/"pairs_features_nonadjacent.csv", lang=lang)
-        features.process_pairs(rnd_path, out_all/"pairs_features_randomized.csv", lang=lang)
-        print(f"[corpus] spaCy feature CSVs saved in {out_all}")
-    elif mode == "stopwords":
-        from preprocessing import features_stopwords
-        features_stopwords.process_pairs(adj_path, out_all/"pairs_features.csv", lang=lang)
-        features_stopwords.process_pairs(non_path, out_all/"pairs_features_nonadjacent.csv", lang=lang)
-        features_stopwords.process_pairs(rnd_path, out_all/"pairs_features_randomized.csv", lang=lang)
-        print(f"[corpus] stopwords feature CSVs saved in {out_all}")
-    elif mode == "wordlists":
-        from preprocessing import features_wordlists
-        features_wordlists.process_pairs(adj_path, out_all/"pairs_features.csv", lang=lang)
-        features_wordlists.process_pairs(non_path, out_all/"pairs_features_nonadjacent.csv", lang=lang)
-        features_wordlists.process_pairs(rnd_path, out_all/"pairs_features_randomized.csv", lang=lang)
-        print(f"[corpus] word-list feature CSVs saved in {out_all}")
-    elif mode == "liwc":
-        from preprocessing import prepare_liwc
-        prepare_liwc.make_liwc_input(adj_path, out_all/"liwc_input.csv")
-        prepare_liwc.make_liwc_input(non_path, out_all/"liwc_input_nonadjacent.csv")
-        prepare_liwc.make_liwc_input(rnd_path, out_all/"liwc_input_randomized.csv")
-        print(f"[corpus] LIWC input CSVs saved in {out_all}")
-    else:
-        raise ValueError("mode must be 'liwc', 'spacy', or 'stopwords'")
+    features_wordlists.process_pairs(adj_path, out_all/"pairs_features.csv", lang=lang)
+    features_wordlists.process_pairs(non_path, out_all/"pairs_features_nonadjacent.csv", lang=lang)
+    features_wordlists.process_pairs(rnd_path, out_all/"pairs_features_randomized.csv", lang=lang)
+    print(f"[corpus] word-list feature CSVs saved in {out_all}")
 
     print(f"[corpus] done. Combined corpus ready at {out_all}")

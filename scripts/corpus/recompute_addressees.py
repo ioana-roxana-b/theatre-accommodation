@@ -2,12 +2,7 @@
 Recompute the addressees column of every data/plays_dialogue/<Play>/quotation_info.csv with
 one rule for all plays: the other characters speaking within +/- 10 utterances.
 
-Why: the annotation fixes in preprocessing/fix_*.py renamed or split speakers without updating
-the addressee lists, and rows they rebuilt used "previous speaker" as the only addressee. A pair
-A->B only counts if B is among A's addressees, so those plays lost exchanges (e.g. The Bald
-Soprano EN kept 0.38 adjacent pairs per turn vs 0.91 in French).
-
-Run after scripts/corpus/extract_dialogues.py and the preprocessing/fix_*.py scripts.
+A pair A->B only counts if B is among A's addressees, so the same rule must hold for every play.
 The first run keeps the previous file as quotation_info.csv.pre_addressees.bak.
 
 Usage:  python scripts/corpus/recompute_addressees.py [--window 10]

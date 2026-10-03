@@ -4,7 +4,7 @@ Addressee-window sensitivity check.
 Re-runs compute_addressees() on data/plays_dialogue/{play}/quotation_info.csv
 with window=5/10/15, replaces the addressees column, then replays:
   preprocess_quotes -> merge_contiguous_turns -> build_pairs
-  -> features_wordlists -> convergence_score_spacy
+  -> features_wordlists -> convergence_score
 
 Usage:  python scripts/stats/sensitivity_window.py   (from repo root)
 """
@@ -19,7 +19,7 @@ import scipy.stats as stats
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from preprocessing import preprocess_data, build_pairs, features_wordlists
-from analysis   import convergence_score_spacy
+from analysis   import convergence_score
 
 PLAY_DIR    = Path("data/plays_dialogue")
 OUT_ROOT    = Path("outputs") / "sensitivity"
@@ -126,7 +126,7 @@ def run_one_play(play: str, lang: str, window: int) -> pd.Series | None:
         (feat_rand, conv_rand, "conv_edge_rand.csv"),
         (feat_non,  conv_non,  "conv_edge_non.csv"),
     ]:
-        convergence_score_spacy.compute_convergence_spacy(
+        convergence_score.compute_convergence(
             pairs_features_path=feat,
             out_conv_pair_feature=conv,
             out_conv_edge=out_dir / lbl,

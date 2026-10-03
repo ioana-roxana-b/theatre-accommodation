@@ -25,7 +25,7 @@ sudo apt install r-base r-cran-lme4          # reply level models (scripts/stats
 
 ```bash
 python scripts/corpus/recompute_addressees.py   # once: one ±10 addressee rule for all plays
-FULL=1 bash scripts/plays/run_all.sh            # pipeline, statistics, models, networks, tables
+FULL=1 bash scripts/plays/run_all.sh            # every analysis in the paper
 ```
 
 Step logs go to `outputs/logs/`. `SKIP_PIPELINE=1` reuses existing pipeline outputs; without `FULL=1` the
@@ -34,14 +34,13 @@ mixed models use a faster approximation (nAGQ = 0).
 ## Layout
 
 | Folder | Contents |
-|--------|----------|
+| --- | --- |
 | `main.py` | Pipeline entry point for one or more plays (`--stage preprocess` / `--stage analysis`). |
 | `preprocessing/` | Turns, A→B pairs (adjacent, non-adjacent, randomized), function word features. |
-| `analysis/` | Convergence scores, tests, plots, character networks. |
-| `scripts/corpus/` | How the corpus was built from the source editions (OCR, cleaning, dialogue extraction). |
+| `analysis/` | Convergence scores and character networks. |
+| `scripts/corpus/` | The ±10 addressee rule applied to all plays. |
 | `scripts/plays/` | Run the pipeline on all plays; `run_all.sh` runs every step. |
-| `scripts/stats/` | Cross-play statistics, mixed effects models, network comparisons, robustness checks. |
-| `scripts/paper/` | LaTeX tables. |
-| `scripts/util/` | Re-draw plots and networks without recomputing. |
+| `scripts/stats/` | Statistical tests, mixed effects models, network comparisons, robustness checks. |
+| `scripts/example/` | The public-domain example. |
 
 Each folder has its own README.

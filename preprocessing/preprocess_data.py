@@ -8,7 +8,7 @@ def clean_text(text: str, lowercase: bool = False) -> str:
         text: Raw quote text as pulled from the CSV.
         lowercase: Whether to lowercase the cleaned string.
     Returns:
-        Cleaned text ready for LIWC or spaCy input.
+        Cleaned text ready for feature extraction.
     """
     if not isinstance(text, str):
         return ""

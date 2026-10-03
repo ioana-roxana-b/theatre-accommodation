@@ -4,7 +4,7 @@ import pandas as pd
 from pathlib import Path
 from typing import List, Tuple, Dict, Optional
 
-def compute_convergence_spacy(
+def compute_convergence(
     pairs_features_path: Path,
     out_conv_pair_feature: Path,
     out_conv_edge: Path,
@@ -14,7 +14,7 @@ def compute_convergence_spacy(
     min_resp_support: Optional[int] = None,
 ) -> Tuple[pd.DataFrame, pd.DataFrame, List[str]]:
     """
-    Compute CAT style convergence from a spaCy features table and write per pair per family rows and per edge summaries.
+    Compute CAT style convergence from a pairs_features table and write per pair per family rows and per edge summaries.
 
     Params:
         pairs_features_path: CSV with columns A and B and for each raw family F the flags F_i_present and F_j_present

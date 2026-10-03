@@ -1,83 +1,11 @@
 from __future__ import annotations
 import argparse
 from pathlib import Path
-from typing import Optional, Dict
 import warnings
 warnings.filterwarnings("ignore")
 
 from preprocessing import preprocessing_pipeline
 from analysis import analysis_pipeline
-
-
-def resolve_liwc_paths(base_in_dir: Path, play_label: str, liwc_adj: Optional[str], liwc_non: Optional[str], liwc_rnd: Optional[str]) -> Dict[str, Optional[Path]]:
-    """
-    Resolve LIWC export paths for the requested play.
-    Params:
-        base_in_dir: Root directory containing preprocess outputs.
-        play_label: Name used to expand {play} placeholders.
-        liwc_adj: Optional path or pattern for adjacent exports.
-        liwc_non: Optional path or pattern for nonadjacent exports.
-        liwc_rnd: Optional path or pattern for randomized exports.
-    Returns:
-        Mapping of LIWC export categories to resolved file paths.
-    """
-    candidates = [base_in_dir, base_in_dir / "analysis_results"]
-    names_adj = [
-        "LIWC-22 Results - liwc_input - LIWC Analysis.csv",
-        "liwc_input.csv",
-    ]
-    names_non = [
-        "LIWC-22 Results - liwc_input_nonadjacent - LIWC Analysis.csv",
-        "liwc_input_nonadjacent.csv",
-    ]
-    names_rnd = [
-        "LIWC-22 Results - liwc_input_randomized - LIWC Analysis.csv",
-        "liwc_input_randomized.csv",
-    ]
-
-    if liwc_adj:
-        adj = Path(liwc_adj.format(play=play_label)) if "{play}" in liwc_adj else Path(liwc_adj)
-    else:
-        adj = None
-    if adj is None:
-        for folder in candidates:
-            for name in names_adj:
-                candidate = folder / name
-                if candidate.exists():
-                    adj = candidate
-                    break
-            if adj is not None:
-                break
-
-    if liwc_non:
-        non = Path(liwc_non.format(play=play_label)) if "{play}" in liwc_non else Path(liwc_non)
-    else:
-        non = None
-    if non is None:
-        for folder in candidates:
-            for name in names_non:
-                candidate = folder / name
-                if candidate.exists():
-                    non = candidate
-                    break
-            if non is not None:
-                break
-
-    if liwc_rnd:
-        rnd = Path(liwc_rnd.format(play=play_label)) if "{play}" in liwc_rnd else Path(liwc_rnd)
-    else:
-        rnd = None
-    if rnd is None:
-        for folder in candidates:
-            for name in names_rnd:
-                candidate = folder / name
-                if candidate.exists():
-                    rnd = candidate
-                    break
-            if rnd is not None:
-                break
-
-    return {"adjacent": adj, "nonadjacent": non, "randomized": rnd}
 
 
 def main():
@@ -88,22 +16,21 @@ def main():
     Returns:
         None
     """
-    ap = argparse.ArgumentParser(description="Run CAT pipeline stage without subprocess.")
+    ap = argparse.ArgumentParser(description="Run one stage of the accommodation pipeline.")
     ap.add_argument(
         "--stage",
         choices=["preprocess", "analysis"],
         required=True,
         help="Select which pipeline stage to execute.",
     )
-
     ap.add_argument(
         "--mode",
-        choices=["spacy", "liwc", "stopwords", "wordlists"],
-        required=True,
-        help="Choose between spaCy, explicit word lists (9 LIWC families), stopwords-iso, or LIWC.",
+        choices=["wordlists"],
+        default="wordlists",
+        help="Feature set: explicit word lists for the 9 LIWC-aligned function word families.",
     )
     ap.add_argument("--play_dir", nargs="+", required=True,
-                    help="Either a single PDNC play folder or a list of them for corpus-level preprocessing.")
+                    help="Either a single play folder or a list of them for corpus-level preprocessing.")
     ap.add_argument(
         "--out_dir",
         required=True,
@@ -116,37 +43,18 @@ def main():
     )
     ap.add_argument("--character_info", type=str, default=None,
                     help="Path to character_info.csv for preprocess.")
-
     ap.add_argument(
         "--min_support",
         type=int,
         default=10,
-        help="Minimum co-occurrence threshold for statistical comparisons.",
-    )
-    ap.add_argument(
-        "--liwc_results",
-        type=str,
-        default=None,
-        help="Path to the adjacent LIWC export CSV.",
-    )
-    ap.add_argument(
-        "--liwc_results_nonadj",
-        type=str,
-        default=None,
-        help="Path to the nonadjacent LIWC export CSV.",
-    )
-    ap.add_argument(
-        "--liwc_results_rand",
-        type=str,
-        default=None,
-        help="Path to the randomized LIWC export CSV.",
+        help="Minimum number of A turns containing a family for a dyad-family score.",
     )
     ap.add_argument("--title", dest="title", default=None)
     ap.add_argument(
         "--lang",
         type=str,
         default="en",
-        help="Language code for spaCy model selection (e.g. 'en', 'fr').",
+        help="Language of the word lists ('en' or 'fr').",
     )
     ap.add_argument(
         "--non_adj_min_gap",
@@ -199,27 +107,18 @@ def main():
     else:
         # ------------ analysis ------------
         in_dir = Path(args.play_dir[0])
-        play_label = in_dir.name
         out_root.mkdir(parents=True, exist_ok=True)
-
-        liwc_paths = resolve_liwc_paths(
-            base_in_dir=in_dir,
-            play_label=play_label,
-            liwc_adj=args.liwc_results,
-            liwc_non=args.liwc_results_nonadj,
-            liwc_rnd=args.liwc_results_rand,
-        )
 
         analysis_pipeline.run_full_analysis(
             in_dir=in_dir,
             out_dir=out_root,
             mode=mode,
             min_support=args.min_support,
-            liwc_paths=liwc_paths,
             play_title=args.title,
         )
 
         print(f"[analysis] Done -> {out_root}")
+
 
 if __name__ == "__main__":
     main()
