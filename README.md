@@ -5,7 +5,13 @@ absurdist plays: the convergence score of Danescu-Niculescu-Mizil & Lee (2011), 
 model (Doyle et al., 2016), accommodation networks, and their comparison across the two language versions
 of each play.
 
-The play texts are under copyright and are not included; `data/README.md` describes the expected input.
+Most play texts are under copyright and are not included; `data/README.md` describes the expected input.
+One public-domain pair is included as an example: Dumas *fils*, *La Dame aux Camélias* (French original,
+1852) and *Camille* (English translation by Matilda Heron, 1856).
+
+```bash
+bash scripts/example/run_example.sh     # → outputs/example/{en,fr}/<Play>/
+```
 
 ## Setup (Linux / WSL)
 

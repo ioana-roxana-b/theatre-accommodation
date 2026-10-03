@@ -1,0 +1,16 @@
+﻿Character ID,Main Name,Aliases,Gender,Category
+0,ANAIS,"{'ANAIS', 'ANÀIS'}",F,minor
+1,ARMAND,"{'armand', 'ARMAND', 'Armand'}",M,major
+2,ARTHUR,{'ARTHUR'},M,minor
+3,DUVAL,"{'DUVÀL', 'DUVAL', 'DU VAL', 'duval'}",M,minor
+4,GASTON,"{'gaston', 'Gaston', 'GASTON'}",M,intermediate
+5,GUSTAVE,{'GUSTAVE'},M,minor
+6,LE COMTE,"{'le comte', 'LE COMTE'}",M,minor
+7,LE DOCTEUR,"{'LE DOCTEUR', 'le docteur'}",M,minor
+8,MARGUERITE,"{'• MARGUERITE', 'MARGUERITE', 'MARGUERITEo', 'MAGUERITE', 'MARGUERITE. *', 'MARGUEMTE', 'marguerite', 'MARGURITE', 'Marguerite'}",F,major
+9,NANINE,"{'NAMNE', 'NANINE', 'NAN1NE', 'Nanine', 'nanine', 'NANÏNE'}",F,intermediate
+10,NICHETTE,"{'NICIIETTE', 'NICHETTE', 'nichette', 'Nichette'}",F,minor
+11,OLYMPE,"{'OLYMPE', 'OL\\MPE', 'olympe'}",F,intermediate
+12,PRUDENCE,"{'prudence', 'Prudence', 'PRUDENCE', 'PRUDENCE»'}",F,major
+13,SAINT-GAUDENS,"{'SAINT-GAUDENS', 'SA1NT-GAUDENS', 'Saint-Gaudens', 'SAINT-GASJDENS', 'saint-gaudens'}",M,intermediate
+14,VARVILLE,"{'varville', 'Varville', 'VAR\\ILLE', 'VARVILLE', 'VA R VILLE'}",M,intermediate

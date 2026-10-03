@@ -9,9 +9,13 @@ venv/
 .idea/
 .vscode/
 
-# Corpus data (copyrighted play texts) - keep only the README
+# Corpus data (copyrighted play texts) - keep only the README and the public-domain example
 data/*
 !data/README.md
+!data/plays_dialogue/
+data/plays_dialogue/*
+!data/plays_dialogue/Dumas_Camille_EN/
+!data/plays_dialogue/Dumas_DameAuxCamelias/
 
 # Generated outputs (reproducible from the pipeline)
 outputs/

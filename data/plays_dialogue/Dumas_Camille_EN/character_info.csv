@@ -1,0 +1,12 @@
+﻿Character ID,Main Name,Aliases,Gender,Category
+0,Armand,"{'Armani', 'Armand', 'Armancl'}",M,major
+1,Camille,"{'CAMILLE', 'CamiUe', 'Camille', 'Camtlle'}",F,major
+2,Duval,{'Duval'},M,minor
+3,Gaston,"{'Gastoyi', 'G-aston', 'Gaston'}",M,intermediate
+4,Gustave,{'Gustave'},M,minor
+5,Messenger,{'Messenger'},M,minor
+6,Nanine,{'Nanine'},F,intermediate
+7,Nichette,"{'NicJiette', 'Nichette'}",F,minor
+8,Olimpe,{'Olimpe'},F,minor
+9,Prudence,{'Prudence'},F,intermediate
+10,Varville,{'Varville'},M,intermediate

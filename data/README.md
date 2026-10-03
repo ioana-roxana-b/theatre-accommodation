@@ -1,6 +1,19 @@
 # data/
 
-Nothing in this folder is distributed: the play texts and translations are under copyright.
+Most play texts and translations in the corpus are under copyright and are not distributed. One play
+pair is included as a public-domain example:
+
+| Folder | Play | Edition |
+|--------|------|---------|
+| `plays_dialogue/Dumas_DameAuxCamelias/` | Alexandre Dumas *fils*, *La Dame aux Camélias* (1852) | French original |
+| `plays_dialogue/Dumas_Camille_EN/` | *Camille*, English translation by Matilda Heron | Cincinnati, 1856 |
+
+Both are OCR'd from scans, so the text contains some OCR errors. The annotations (speakers, inferred
+addressees, character gender and narrative prominence) are the ones used in the analysis.
+
+```bash
+bash scripts/example/run_example.sh     # preprocessing + analysis for the example pair
+```
 
 Expected layout:
 
