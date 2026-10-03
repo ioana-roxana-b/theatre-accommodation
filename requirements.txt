@@ -1,0 +1,9 @@
+pandas>=2.3
+numpy>=2.3
+scipy>=1.16
+matplotlib>=3.10
+seaborn>=0.13
+networkx>=3.5
+spacy>=3.8
+stopwordsiso>=0.6
+statsmodels>=0.14   # only for scripts/stats/mixed_effects_model.py

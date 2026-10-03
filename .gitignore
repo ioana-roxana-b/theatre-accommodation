@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# Editors
+.idea/
+.vscode/
+
+# Corpus data (copyrighted play texts) - keep only the README
+data/*
+!data/README.md
+
+# Generated outputs (reproducible from the pipeline)
+outputs/
+
+*.pdf
+*.zip
