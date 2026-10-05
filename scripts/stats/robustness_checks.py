@@ -2,7 +2,7 @@
 Robustness checks. They recompute the DNM convergence score directly from the
 pair tables, with the same rule as the pipeline: for each A->B dyad and family, p0 = share of B
 turns with the family, p1 = the same among pairs whose A turn has it, kept if A has >= 3 such turns
-and B used the family in >= 2 of the replies to them (MIN_RESP, as in analysis/analysis_pipeline.py).
+(MIN_SUPPORT). No threshold on B's response (MIN_RESP = None), as in analysis/analysis_pipeline.py.
 
   seeds        The randomized control is one shuffle (seed 123). Repeat it with other seeds and report
                how much the randomized mean and the adjacent vs randomized effect vary.
@@ -16,9 +16,8 @@ and B used the family in >= 2 of the replies to them (MIN_RESP, as in analysis/a
   reciprocity  Pearson vs Spearman reciprocity per play.
   table        Adjacent vs randomized by author, movement and overall, with the randomized side averaged
                over many independent shuffles (--n_shuffles) and a permutation p value. Not run by default.
-  response     The pipeline keeps a dyad-family score only if B used the family in at least 2 of the
-               replies following A's triggers (min_resp_support=2 in analysis/analysis_pipeline.py).
-               Redo the main comparisons without that filter.
+  response     Redo the main comparisons with an extra threshold that keeps a dyad-family score only
+               if B used the family in at least 2 of the replies following A's triggers.
 
 Reads   outputs/plays_{en,fr}/wordlists/<Play>/pairs_features{,_nonadjacent}.csv
         outputs/network_preservation/matched_edges_conv.csv   (for the French cross-language check)
@@ -44,7 +43,7 @@ from scripts.stats.build_alignment_table import WORKS, FAMILIES, ABSURDIST  # no
 
 OUT = Path('outputs/robustness')
 MIN_SUPPORT = 3
-MIN_RESP = 2
+MIN_RESP = None   # the pipeline uses no B-response threshold; 2 is tested as a check
 PREFIXES = list(FAMILIES)                       # article, auxverb, ... (the 9 paper families)
 FR_AMBIGUOUS_ARTICLES = {'le', 'la', 'les', 'l'}
 
@@ -327,7 +326,7 @@ def check_reciprocity():
 
 def check_response(adj_pairs, non_pairs):
     rows = []
-    for name, mr in [('with filter (paper)', MIN_RESP), ('without filter', None)]:
+    for name, mr in [('no response threshold (paper)', None), ('response threshold 2', 2)]:
         adj, non = convergence(adj_pairs, mr), convergence(non_pairs, mr)
         rnd = convergence(shuffle_replies(adj_pairs, 123), mr)
         for test, a, b in [

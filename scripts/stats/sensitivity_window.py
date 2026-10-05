@@ -133,7 +133,7 @@ def run_one_play(play: str, lang: str, window: int) -> pd.Series | None:
             min_support=MIN_SUPPORT,
             family_rename=FAMILY_RENAME,
             allowed_families=ALLOWED_FAMILIES,
-            min_resp_support=2,
+            min_resp_support=None,
         )
 
     return pairs_adj  # return for n_pairs count

@@ -63,7 +63,7 @@ def run_one_play_analysis(
             min_support=min_support,
             family_rename=FAMILY_RENAME,
             allowed_families=set(FAMILY_RENAME.values()),
-            min_resp_support=2,
+            min_resp_support=None,
         )
 
 
