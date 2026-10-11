@@ -15,8 +15,9 @@ def clean_text(text: str, lowercase: bool = False) -> str:
 
     t = text.strip()
 
-    # Remove punctuation and symbols, preserving ? for question detection
-    t = re.sub(r"[^A-Za-z0-9\s?]", " ", t)
+    # Remove punctuation and symbols, preserving ? for question detection.
+    # \w is Unicode-aware, so accented letters (French à, très, ça, été) are kept.
+    t = re.sub(r"[^\w\s?]|_", " ", t)
 
     # Normalize multiple spaces
     t = re.sub(r"\s+", " ", t)
