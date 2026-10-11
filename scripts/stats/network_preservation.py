@@ -1,38 +1,3 @@
-"""
-Cross-language network preservation: is a play's accommodation network (who accommodates
-to whom, and how much) preserved between its English and French versions?
-
-For each of the 12 works, characters are aligned across versions with
-scripts/stats/character_alignment.csv, and the directed edges A->B present in both
-versions are compared:
-
-  edge weights  Spearman rho between EN and FR weights of the matched edges
-                (also after partialling out dyad size, log n_pairs, in each version)
-  edge signs    share of matched edges with the same sign (convergence vs divergence),
-                next to the share expected if signs were independent
-  node roles    Spearman rho of each character's out-strength (how much they accommodate)
-                and in-strength (how much others accommodate to them), from all of the
-                character's edges in each version
-
-Significance: permutation within each work (FR weights shuffled across the matched edges,
-or across the aligned characters for node roles). The pooled test shuffles every work at
-once and compares the mean rho, so H0 is "matched EN/FR edges are no more alike than
-randomly re-paired edges of the same play".
-
-Two edge weights are compared (both are computed):
-  conv     mean_conv from conv_edge_summary_wordlists.csv: the networks in the paper
-           (Danescu-Niculescu-Mizil & Lee measure, averaged over families)
-  trigger  mean over families of P(B uses f | A used f) - P(B uses f | A did not), from
-           the reply-level table; not shrunk by the family's base rate. A family counts
-           for an edge if both groups have >= MIN_GROUP pairs; an edge needs >= MIN_FAMILIES.
-
-Reads  outputs/plays_{en,fr}/wordlists/<Play>/analysis_results/convergence_results/conv_edge_summary_wordlists.csv
-       outputs/alignment/reply_level.csv.gz  (python scripts/stats/build_alignment_table.py)
-       scripts/stats/character_alignment.csv
-Writes outputs/network_preservation/{matched_edges,per_work,node_roles,pooled}_<weight>.csv
-
-Usage:  python scripts/stats/network_preservation.py [--n_perm 10000] [--min_pairs 0]
-"""
 import argparse
 import sys
 from pathlib import Path
@@ -42,7 +7,7 @@ import pandas as pd
 from scipy.stats import spearmanr
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from build_alignment_table import WORKS  # noqa: E402
+from build_alignment_table import WORKS  
 
 OUT = Path('outputs/network_preservation')
 ALIGNMENT = Path(__file__).resolve().parent / 'character_alignment.csv'

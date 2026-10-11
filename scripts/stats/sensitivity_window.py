@@ -1,13 +1,3 @@
-"""
-Addressee-window sensitivity check.
-
-Re-runs compute_addressees() on data/plays_dialogue/{play}/quotation_info.csv
-with window=5/10/15, replaces the addressees column, then replays:
-  preprocess_quotes -> merge_contiguous_turns -> build_pairs
-  -> features_wordlists -> convergence_score
-
-Usage:  python scripts/stats/sensitivity_window.py   (from repo root)
-"""
 from __future__ import annotations
 import ast, sys
 from pathlib import Path

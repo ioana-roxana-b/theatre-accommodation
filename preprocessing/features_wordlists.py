@@ -1,10 +1,3 @@
-"""
-Word-list-based feature extraction for the 9 LIWC-aligned families.
-Tokenises text by splitting on whitespace and non-alpha characters,
-handling French elision apostrophes so that "l'homme" yields ["l", "homme"].
-No spaCy POS tagging — membership is determined purely by the explicit lists
-in function_word_lists.py.
-"""
 from __future__ import annotations
 import re
 from collections import Counter
@@ -83,7 +76,6 @@ def process_pairs(pairs_path: Path, out_path: Path, lang: str = "en") -> pd.Data
 
         rows.append(row)
 
-    # Length bucket: short = below-median token count across all turns in this file
     if rows:
         all_lengths = [r["i_tokens"] for r in rows] + [r["j_tokens"] for r in rows]
         median_len = float(np.median(all_lengths))

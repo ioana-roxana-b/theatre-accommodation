@@ -1,12 +1,3 @@
-"""
-Recompute the addressees column of every data/plays_dialogue/<Play>/quotation_info.csv with
-one rule for all plays: the other characters speaking within +/- 10 utterances.
-
-A pair A->B only counts if B is among A's addressees, so the same rule must hold for every play.
-The first run keeps the previous file as quotation_info.csv.pre_addressees.bak.
-
-Usage:  python scripts/corpus/recompute_addressees.py [--window 10]
-"""
 import argparse
 import ast
 import shutil
@@ -16,7 +7,7 @@ from pathlib import Path
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-from preprocessing.addressees import recompute_addressees  # noqa: E402
+from preprocessing.addressees import recompute_addressees  
 
 CORPUS = Path("data/plays_dialogue")
 

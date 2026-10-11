@@ -1,32 +1,3 @@
-"""
-Robustness checks. They recompute the DNM convergence score directly from the
-pair tables, with the same rule as the pipeline: for each A->B dyad and family, p0 = share of B
-turns with the family, p1 = the same among pairs whose A turn has it, kept if A has >= 3 such turns
-(MIN_SUPPORT). No threshold on B's response (MIN_RESP = None), as in analysis/analysis_pipeline.py.
-
-  seeds        The randomized control is one shuffle (seed 123). Repeat it with other seeds and report
-               how much the randomized mean and the adjacent vs randomized effect vary.
-  addressee    Keep only pairs whose A turn has a single candidate addressee (no group-scene
-               ambiguity) and redo adjacent vs randomized / non-adjacent and absurdist vs realist.
-  french       French le / la / les / l' can be object pronouns. Remove them from the article list,
-               recompute the French scores, and redo the movement, language and cross-language tests.
-  lexicon      Number of entries per family and language in the word lists.
-  counts       Dyad-family scores retained per play and condition.
-  length       Absurdist vs realist odds ratios stratified by turn-length bins.
-  reciprocity  Pearson vs Spearman reciprocity per play.
-  table        Adjacent vs randomized by author, movement and overall, with the randomized side averaged
-               over many independent shuffles (--n_shuffles) and a permutation p value. Not run by default.
-  response     Redo the main comparisons with an extra threshold that keeps a dyad-family score only
-               if B used the family in at least 2 of the replies following A's triggers.
-
-Reads   outputs/plays_{en,fr}/wordlists/<Play>/pairs_features{,_nonadjacent}.csv
-        outputs/network_preservation/matched_edges_conv.csv   (for the French cross-language check)
-Writes  outputs/robustness/*.csv
-
-Usage (from repo root):
-  python scripts/stats/robustness_checks.py              # all checks
-  python scripts/stats/robustness_checks.py seeds --n_seeds 50
-"""
 import argparse
 import ast
 import sys
@@ -43,8 +14,8 @@ from scripts.stats.build_alignment_table import WORKS, FAMILIES, ABSURDIST  # no
 
 OUT = Path('outputs/robustness')
 MIN_SUPPORT = 3
-MIN_RESP = None   # the pipeline uses no B-response threshold; 2 is tested as a check
-PREFIXES = list(FAMILIES)                       # article, auxverb, ... (the 9 paper families)
+MIN_RESP = None  
+PREFIXES = list(FAMILIES)                       
 FR_AMBIGUOUS_ARTICLES = {'le', 'la', 'les', 'l'}
 
 

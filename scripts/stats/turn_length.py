@@ -1,22 +1,3 @@
-"""
-Play-level turn length vs convergence.
-
-For each of the 24 plays: mean and median reply length (tokens) over adjacent A->B pairs,
-the share of long replies (>= 50 tokens, speech-like turns), and the DNM convergence score
-P(B_f | A_f) - P(B_f), pooled over the play's adjacent pairs and averaged over the 9 families.
-Then: Spearman correlations with convergence (all plays and within each movement) and OLS
-regressions of convergence on movement, log mean turn length, and both.
-
-The reply-level counterpart, with play mean turn length as a moderator of accommodation in
-the GLMM, is scripts/stats/turn_length_glmm.R.
-
-Reads   outputs/alignment/reply_level.csv.gz   (scripts/stats/build_alignment_table.py)
-Writes  outputs/turn_length/turn_length_by_play.csv
-        outputs/turn_length/turn_length_tests.csv
-
-Usage (from repo root):
-  python scripts/stats/turn_length.py
-"""
 from pathlib import Path
 
 import numpy as np

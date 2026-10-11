@@ -1,17 +1,3 @@
-"""
-Is the movement contrast driven by a single author? Absurdist vs realist accommodation with each of
-the six authors left out in turn.
-
-  dnm  independent t-test on adjacent dyad-family convergence scores (as in compute_stats.py)
-  OR   reply level Mantel-Haenszel odds ratio of B using f after A used f, over play x family strata,
-       computed separately for absurdist and realist plays
-
-Reads   outputs/plays_{en,fr}/wordlists/<Play>/analysis_results/convergence_results/conv_by_pair_feature_wordlists.csv
-        outputs/alignment/reply_level.csv.gz
-Writes  outputs/robustness/leave_one_author_out.csv
-
-Usage:  python scripts/stats/leave_one_author_out.py   (from repo root)
-"""
 from pathlib import Path
 
 import numpy as np

@@ -1,13 +1,3 @@
-"""
-Mixed effects regression model for convergence analysis.
-
-Fits a single multivariate model with convergence score as DV and:
-  - Fixed effects: genre, language, gender dyad type, directed importance dyad, feature family
-  - Random intercepts: play (primary model), with a dyad-level variance component
-    to account for repeated observations of the same A->B dyad across feature families
-  - Robustness check: nested random effects (play within author) to test whether the
-    genre effect survives a stricter, author-level grouping
-"""
 import os
 import pandas as pd
 import numpy as np

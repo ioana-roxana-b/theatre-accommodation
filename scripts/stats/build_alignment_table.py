@@ -1,25 +1,7 @@
-"""
-Build the reply-level table for scripts/stats/alignment_glmm.R and alignment_conditions.R.
-
-One row per A->B pair x feature family, for all three pair conditions
-(adjacent, nonadjacent = 3-5 turns later, randomized = B's replies shuffled within the dyad), with:
-  condition
-  a_uses / b_uses   did A's turn / B's reply contain the family (0/1)
-  a_len / b_len     turn lengths in tokens
-  play, work, language, author, genre, dyad, b_speaker, gender_dyad, importance_dyad
-
-`work` links the English and French versions of the same play, so the model can
-compare languages within a work.
-
-Reads  outputs/plays_{en,fr}/wordlists/<Play>/pairs_features{,_nonadjacent,_randomized}.csv
-Writes outputs/alignment/reply_level.csv.gz
-
-Usage:  python scripts/stats/build_alignment_table.py   (from repo root)
-"""
 from pathlib import Path
 import pandas as pd
 
-# (English version, French version) -> work id
+
 WORKS = {
     'Godot':      ('Beckett_WaitingForGodot',  'Beckett_EnAttendantGodot'),
     'Endgame':    ('Beckett_Endgame',          'Beckett_FinDePartie'),

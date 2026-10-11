@@ -1,10 +1,3 @@
-"""
-Addressee inference for plays: the candidate addressees of an utterance are all other
-characters who speak within +/- `window` utterances (scene co-presence).
-
-Used by scripts/corpus/recompute_addressees.py (applied to data/plays_dialogue/) and by
-scripts/stats/sensitivity_window.py (windows 5 / 10 / 15), so both use the same rule.
-"""
 from __future__ import annotations
 
 import pandas as pd

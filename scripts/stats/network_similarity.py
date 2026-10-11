@@ -1,38 +1,3 @@
-"""
-Cross-play network similarity: is a play's French accommodation network more similar to its
-own English version than to the other plays' networks?
-
-Different plays have different characters, so networks are compared through descriptors of how
-accommodation is organised, which need no character alignment:
-
-  recip_corr     Spearman rho between w(A->B) and w(B->A) over reciprocal pairs
-  neg_share      share of edges with negative weight (divergence)
-  out_spread     SD of characters' mean outgoing weight / SD of edge weights
-                 (how much accommodation depends on who is accommodating)
-  in_spread      same for incoming weight (depends on who is accommodated to)
-  w_target_deg   Spearman rho between edge weight and the target's degree
-                 (do characters accommodate more to central characters?)
-  w_source_deg   same for the source's degree
-  top_share      share of total |weight| on the top quarter of edges
-
-Descriptors are z-scored over the 24 networks; distance = RMS difference over the descriptors
-defined for both networks. This gives a 12 x 12 EN x FR distance matrix.
-
-Tests
-  diag_advantage   mean off-diagonal distance - mean diagonal distance (matched pairs closer)
-  identified       number of EN plays whose nearest FR network is their own translation
-  matching null    FR labels shuffled across works (the standard test)
-  topology null    each network's weights shuffled across its own edges, which keeps the cast
-                   and who-talks-to-whom but destroys the accommodation pattern. Matched versions
-                   share their cast, so part of the advantage comes from topology alone; the
-                   observed advantage is compared with this null to see what the accommodation
-                   pattern adds beyond it.
-
-Reads  the same inputs as network_preservation.py
-Writes outputs/network_similarity/{descriptors,distance_matrix,summary}_<weight>.csv
-
-Usage:  python scripts/stats/network_similarity.py [--n_perm 2000]
-"""
 import argparse
 import sys
 from pathlib import Path
@@ -42,8 +7,8 @@ import pandas as pd
 from scipy.stats import spearmanr
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from build_alignment_table import WORKS  # noqa: E402
-from network_preservation import conv_edges, trigger_edges  # noqa: E402
+from build_alignment_table import WORKS  
+from network_preservation import conv_edges, trigger_edges 
 
 OUT = Path('outputs/network_similarity')
 DESCRIPTORS = ['recip_corr', 'neg_share', 'out_spread', 'in_spread', 'w_target_deg', 'w_source_deg', 'top_share']
