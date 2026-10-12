@@ -8,9 +8,9 @@ import pandas as pd
 from scipy import stats
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-from preprocessing.features_wordlists import _tokenize  # noqa: E402
-from preprocessing.function_word_lists import LISTS  # noqa: E402
-from scripts.stats.build_alignment_table import WORKS, FAMILIES, ABSURDIST  # noqa: E402
+from preprocessing.features_wordlists import _tokenize 
+from preprocessing.function_word_lists import LISTS
+from scripts.stats.build_alignment_table import WORKS, FAMILIES, ABSURDIST 
 
 OUT = Path('outputs/robustness')
 MIN_SUPPORT = 3
