@@ -14,7 +14,7 @@ from analysis   import convergence_score
 PLAY_DIR    = Path("data/plays_dialogue")
 OUT_ROOT    = Path("outputs") / "sensitivity"
 WINDOWS     = [5, 10, 15]
-MIN_SUPPORT = 2
+MIN_SUPPORT = 3  
 
 PLAYS_EN = [
     "Beckett_WaitingForGodot", "Beckett_Endgame",

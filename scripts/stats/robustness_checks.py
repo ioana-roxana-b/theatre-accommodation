@@ -94,6 +94,18 @@ def compare(a, b):
     return dict(mean_1=np.mean(a), mean_2=np.mean(b), n_1=len(a), n_2=len(b), d=cohend(a, b), t=t, p=p)
 
 
+def mh_or(pairs):
+    """Pooled Mantel-Haenszel odds ratio of B using a family after A used it, over play x family strata."""
+    num = den = 0.0
+    for _, g in pairs.groupby('play'):
+        n = len(g)
+        for f in PREFIXES:
+            a = g[f'{f}_i_present'].to_numpy(); b = g[f'{f}_j_present'].to_numpy()
+            num += np.sum((a == 1) & (b == 1)) * np.sum((a == 0) & (b == 0)) / n
+            den += np.sum((a == 1) & (b == 0)) * np.sum((a == 0) & (b == 1)) / n
+    return num / den
+
+
 # ── Checks ─────────────────────────────────────────────────────────────────
 def check_seeds(adj_pairs, n_seeds):
     adj = convergence(adj_pairs)
@@ -113,7 +125,7 @@ def check_seeds(adj_pairs, n_seeds):
           .loc[['mean', 'std', 'min', '2.5%', '97.5%', 'max']].round(4).to_string())
 
 
-def check_addressee(adj_pairs, non_pairs):
+def check_addressee(adj_pairs, non_pairs, n_shuffles=1000):
     single = lambda d: d[d['i_addressees'].map(n_addressees) == 1]
     a_p, n_p = single(adj_pairs), single(non_pairs)
     adj, non, rnd = convergence(a_p), convergence(n_p), convergence(shuffle_replies(a_p, 123))
@@ -130,6 +142,19 @@ def check_addressee(adj_pairs, non_pairs):
     res.to_csv(OUT / 'single_addressee.csv', index=False)
     print(f'\n== Single candidate addressee: {len(a_p)} of {len(adj_pairs)} adjacent pairs ({100 * share:.1f}%)')
     print(res.round(4).to_string(index=False))
+
+    # Reply level odds ratios (Table 11): adjacent, randomized averaged over n_shuffles, and by movement
+    or_rows = []
+    for name, sub in [('all pairs', adj_pairs), ('single addressee', a_p)]:
+        sub = sub.reset_index(drop=True)
+        rand = [mh_or(shuffle_replies(sub, 10_000 + s)) for s in range(n_shuffles)]
+        or_rows.append(dict(subset=name, n_pairs=len(sub), adjacent=mh_or(sub), randomized=np.mean(rand),
+                            randomized_sd=np.std(rand), absurdist=mh_or(sub[sub.genre == 'Absurdist']),
+                            realist=mh_or(sub[sub.genre == 'Realist'])))
+    ors = pd.DataFrame(or_rows)
+    ors.to_csv(OUT / 'single_addressee_or.csv', index=False)
+    print(f'Mantel-Haenszel odds ratios (randomized averaged over {n_shuffles} shuffles)')
+    print(ors.round(3).to_string(index=False))
 
 
 def check_french(adj_pairs):
@@ -179,11 +204,11 @@ def check_french(adj_pairs):
     print(edge_rows.round(3).to_string(index=False))
 
 
-def check_table(adj_pairs, n_shuffles):
+def check_table(adj_pairs, n_shuffles, min_resp=MIN_RESP, tag=''):
     """Adjacent vs randomized by author / movement / overall, with the randomized side averaged over
     n_shuffles independent shuffles. p_perm = share of shuffles whose randomized mean reaches the
     adjacent mean (permutation test); p_t_median = median t-test p over shuffles."""
-    adj = convergence(adj_pairs)
+    adj = convergence(adj_pairs, min_resp)
     groups = _dyad_index(adj_pairs)
     sel = {'Overall': lambda d: d}
     for a in ['Beckett', 'Ionesco', 'Genet', 'Becque', 'Brieux', 'Dumas']:
@@ -192,19 +217,20 @@ def check_table(adj_pairs, n_shuffles):
         sel[g] = (lambda g: lambda d: d[d.genre == g])(g)
     rows = []
     for s in range(n_shuffles):
-        rnd = convergence(shuffle_replies(adj_pairs, 10_000 + s, groups))
+        rnd = convergence(shuffle_replies(adj_pairs, 10_000 + s, groups), min_resp)
         for name, f in sel.items():
             c = compare(f(adj)['conv'], f(rnd)['conv'])
             rows.append(dict(shuffle=s, group=name, adj_mean=c['mean_1'], rand_mean=c['mean_2'], d=c['d'], p=c['p']))
     res = pd.DataFrame(rows)
-    res.to_csv(OUT / 'shuffle_table_all.csv', index=False)
+    res.to_csv(OUT / f'shuffle_table{tag}_all.csv', index=False)
     summ = res.groupby('group', sort=False).agg(
         adj_mean=('adj_mean', 'first'), rand_mean=('rand_mean', 'mean'), d=('d', 'mean'),
         p_t_median=('p', 'median'), share_p05=('p', lambda x: (x < 0.05).mean()))
     summ['p_perm'] = res.groupby('group', sort=False).apply(
         lambda g: (1 + (g.rand_mean >= g.adj_mean).sum()) / (len(g) + 1))
-    summ.to_csv(OUT / 'shuffle_table.csv')
-    print(f'\n== Adjacent vs randomized, randomized averaged over {n_shuffles} shuffles')
+    summ.to_csv(OUT / f'shuffle_table{tag}.csv')
+    print(f'\n== Adjacent vs randomized, randomized averaged over {n_shuffles} shuffles'
+          + (f' (B-response threshold {min_resp})' if min_resp else ''))
     print(summ.round(4).to_string())
 
 
@@ -333,7 +359,7 @@ def main():
     adj_pairs = pd.concat([load_pairs(p, l) for p, l in plays()], ignore_index=True)
     check = convergence(adj_pairs)
     print(f'Recomputed adjacent mean {check.conv.mean():.5f} over {len(check)} scores '
-          '(pipeline: 0.03070 over 5460)')
+          '(pipeline: 0.01314 over 6401)')
     if 'lexicon' in args.checks:
         check_lexicon()
     if {'addressee', 'response'} & set(args.checks):
@@ -341,13 +367,15 @@ def main():
     if 'response' in args.checks:
         check_response(adj_pairs, non_pairs)
     if 'addressee' in args.checks:
-        check_addressee(adj_pairs, non_pairs)
+        check_addressee(adj_pairs, non_pairs, args.n_shuffles)
     if 'french' in args.checks:
         check_french(adj_pairs)
     if 'seeds' in args.checks:
         check_seeds(adj_pairs, args.n_seeds)
     if 'table' in args.checks:
         check_table(adj_pairs, args.n_shuffles)
+    if 'table_response' in args.checks:
+        check_table(adj_pairs, args.n_shuffles, min_resp=2, tag='_response')
     if 'counts' in args.checks:
         check_counts()
     if 'length' in args.checks:
